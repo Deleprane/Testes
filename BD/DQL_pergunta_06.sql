@@ -2,7 +2,6 @@
 -- Partidas em que o clube com maior posse de bola foi derrotado.
 -- Exibe: mandante, visitante, posse do mandante, posse do visitante,
 --        vencedor e diferença percentual de posse entre os clubes.
--- NULLIF trata registros com posse_de_bola vazia (evita erro de cast).
 
 SELECT
     j.mandante,
@@ -11,8 +10,8 @@ SELECT
     e_v.posse_de_bola   AS posse_visitante,
     j.vencedor,
     ABS(
-        CAST(NULLIF(REPLACE(e_m.posse_de_bola, '%', ''), '') AS NUMERIC) -
-        CAST(NULLIF(REPLACE(e_v.posse_de_bola, '%', ''), '') AS NUMERIC)
+        CAST(NULLIF(REGEXP_REPLACE(e_m.posse_de_bola, '[^0-9.]', '', 'g'), '') AS NUMERIC) -
+        CAST(NULLIF(REGEXP_REPLACE(e_v.posse_de_bola, '[^0-9.]', '', 'g'), '') AS NUMERIC)
     )                   AS diferenca_percentual
 FROM jogos j
 JOIN estatisticas e_m ON e_m.partida_id = j.id AND e_m.clube = j.mandante
@@ -21,12 +20,12 @@ WHERE j.vencedor IS NOT NULL AND j.vencedor <> ''
   AND e_m.posse_de_bola IS NOT NULL AND e_m.posse_de_bola <> ''
   AND e_v.posse_de_bola IS NOT NULL AND e_v.posse_de_bola <> ''
   AND (
-        (CAST(NULLIF(REPLACE(e_m.posse_de_bola, '%', ''), '') AS NUMERIC) >
-         CAST(NULLIF(REPLACE(e_v.posse_de_bola, '%', ''), '') AS NUMERIC)
+        (CAST(NULLIF(REGEXP_REPLACE(e_m.posse_de_bola, '[^0-9.]', '', 'g'), '') AS NUMERIC) >
+         CAST(NULLIF(REGEXP_REPLACE(e_v.posse_de_bola, '[^0-9.]', '', 'g'), '') AS NUMERIC)
          AND j.vencedor = j.visitante)
         OR
-        (CAST(NULLIF(REPLACE(e_v.posse_de_bola, '%', ''), '') AS NUMERIC) >
-         CAST(NULLIF(REPLACE(e_m.posse_de_bola, '%', ''), '') AS NUMERIC)
+        (CAST(NULLIF(REGEXP_REPLACE(e_v.posse_de_bola, '[^0-9.]', '', 'g'), '') AS NUMERIC) >
+         CAST(NULLIF(REGEXP_REPLACE(e_m.posse_de_bola, '[^0-9.]', '', 'g'), '') AS NUMERIC)
          AND j.vencedor = j.mandante)
       )
 ORDER BY diferenca_percentual DESC;
