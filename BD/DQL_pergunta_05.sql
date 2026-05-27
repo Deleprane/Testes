@@ -6,14 +6,18 @@
 WITH vitorias AS (
     SELECT tecnico_mandante AS tecnico, COUNT(*) AS total
     FROM jogos
-    WHERE vencedor = mandante AND vencedor IS NOT NULL AND vencedor <> ''
+    WHERE vencedor = mandante
+      AND vencedor IS NOT NULL AND vencedor <> ''
+      AND tecnico_mandante IS NOT NULL AND tecnico_mandante <> ''
     GROUP BY tecnico_mandante
 
     UNION ALL
 
     SELECT tecnico_visitante AS tecnico, COUNT(*) AS total
     FROM jogos
-    WHERE vencedor = visitante AND vencedor IS NOT NULL AND vencedor <> ''
+    WHERE vencedor = visitante
+      AND vencedor IS NOT NULL AND vencedor <> ''
+      AND tecnico_visitante IS NOT NULL AND tecnico_visitante <> ''
     GROUP BY tecnico_visitante
 ),
 total_por_tecnico AS (
